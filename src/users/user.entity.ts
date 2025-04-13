@@ -1,5 +1,6 @@
 import { hash } from "bcrypt";
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert } from "typeorm";
+import { Rol } from "src/roles/rol.entity";
+import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, ManyToMany, JoinTable } from "typeorm";
 
 @Entity({ name: 'users' })
 export class User {
@@ -27,5 +28,17 @@ export class User {
     async hashPassword() {
         this.password = await hash(this.password, Number(process.env.HASH_SALT));
     }
+
+    @JoinTable({
+        name: 'users_has_roles', // table name for the join table
+        joinColumn: {
+            name: 'user_id', // name of the column that references the user
+        },
+        inverseJoinColumn: {
+            name: 'rol_id', // name of the column that references the rol
+        },
+    }) // principal table
+    @ManyToMany(() => Rol, (rol) => rol.users)
+    roles: Rol[];
 
 }

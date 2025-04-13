@@ -22,5 +22,10 @@ export class RegisterAuthDto {
     @MinLength(6, {message: 'Password is too short. Minimal length is 6 characters'})
     password: string;
 
+    @IsNotEmpty()
     is_active: boolean;
+
+
+    @IsNotEmpty()
+    rolesIds: string[]; // array of roles ids
 }

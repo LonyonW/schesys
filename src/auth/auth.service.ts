@@ -1,15 +1,17 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/user.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { RegisterAuthDto } from './dto/register-auth.dto';
 import { compare } from 'bcrypt';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { JwtService } from '@nestjs/jwt';
+import { Rol } from 'src/roles/rol.entity';
 
 @Injectable()
 export class AuthService {
     constructor(@InjectRepository(User) private usersRepository: Repository<User>, 
+    @InjectRepository(Rol) private rolesRepository: Repository<Rol>,
     private jwtService: JwtService, // Inject the JwtService
 ) {}
 
@@ -20,35 +22,70 @@ export class AuthService {
         const emailExists = await this.usersRepository.findOneBy({ email: email });
 
         if (emailExists) {
-            return new HttpException('Email already exists', HttpStatus.CONFLICT); //409
+            throw new HttpException('Email already exists', HttpStatus.CONFLICT); //409
+        }
+
+        if (!user.rolesIds || !Array.isArray(user.rolesIds) || user.rolesIds.length === 0) {
+            throw new HttpException('At least one role must be specified', HttpStatus.BAD_REQUEST); // 400
         }
 
         const newUser = this.usersRepository.create(user);
-        return this.usersRepository.save(newUser);
+
+
+
+        const rolesIds = user.rolesIds; // Get the roles ids from the user object
+
+        
+        const roles = await this.rolesRepository.findBy({ id: In(rolesIds)}); // Find the roles by ids
+        newUser.roles = roles; // Assign the roles to the user
+
+
+        const userSaved = await this.usersRepository.save(newUser);
+
+        const rolesString = userSaved.roles.map(rol => rol.id); // Get only the ids of the roles
+
+        const payload = { id: userSaved.id, first_name: userSaved.first_name, roles: rolesString }; // Create the payload with user data
+        const token = this.jwtService.sign(payload); // Generate JWT token
+
+        const data = {
+            user: userSaved,
+            token: 'Bearer ' + token,
+        }
+
+        delete data.user.password; // Remove password from user data
+
+        return data
     }
 
     async login(loginData: LoginAuthDto) {
 
         const { email, password } = loginData;
-        const userFound = await this.usersRepository.findOneBy({ email: email }); 
+        const userFound = await this.usersRepository.findOne({ 
+            where: { email: email },
+            relations: ['roles'] // Include roles in the query
+         }); 
 
         if (!userFound) {
-            return new HttpException('Email not found', HttpStatus.NOT_FOUND); //404
+            throw new HttpException('Email not found', HttpStatus.NOT_FOUND); //404
         }
 
         const passwordMatches = await compare(password, userFound.password);
 
         if (!passwordMatches) {
-            return new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED); //401
+            throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED); //401
         }
 
-        const payload = { id: userFound.id, first_name: userFound.first_name };
+        const rolesIds = userFound.roles.map(rol => rol.id); // Get only de ids of the roles
+
+        const payload = { id: userFound.id, first_name: userFound.first_name, roles: rolesIds };
         const token = this.jwtService.sign(payload); // Generate JWT token
 
         const data = {
             user: userFound,
-            token: token,
+            token: 'Bearer ' + token,
         }
+
+        delete data.user.password; // Remove password from user data
         return data;
 
 
