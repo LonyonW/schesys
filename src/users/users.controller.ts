@@ -6,6 +6,7 @@ import { UpdateUserDto } from './dto/update-dto-user';
 import { JwtRolesGuard } from 'src/auth/jwt/jwt-roles.guard';
 import { hasRoles } from 'src/auth/jwt/has-roles';
 import { JwtRole } from 'src/auth/jwt/jwt-role';
+import { Req } from '@nestjs/common';
 
 @Controller('users')
 export class UsersController {
@@ -14,7 +15,7 @@ export class UsersController {
     constructor(private usersService: UsersService) {}
 
 
-    @hasRoles(JwtRole.ADMIN, JwtRole.DIRECTOR, JwtRole.SECRETARY) // PTOTECCION DE RUTAS por rol
+    @hasRoles(JwtRole.ADMIN, JwtRole.DIRECTOR) // PTOTECCION DE RUTAS por rol
     @UseGuards(JwtAuthGuard, JwtRolesGuard) // PTOTECCION DE RUTAS token obligado
     @Get() // http://localhost:3000/users -> GET
     findAll() {
@@ -26,11 +27,22 @@ export class UsersController {
         return this.usersService.create(user);
     }
 
-    @UseGuards(JwtAuthGuard) // PTOTECCION DE RUTAS
-    @Put(':id') // http://localhost:3000/users/:id -> PUT
-    Update(@Param('id', ParseIntPipe) id: number, @Body() user: UpdateUserDto) {
-        return this.usersService.update(id, user);
+
+    // Los usuarios comunes solo pueden modificar su propio perfil
+    @UseGuards(JwtAuthGuard)
+    @hasRoles(JwtRole.ADMIN, JwtRole.DIRECTOR, JwtRole.SECRETARY) // <- o como tengas tus roles
+    @Put('me') // http://localhost:3000/users/me // me indica que solo el usuario actualmente autenticado se puede modificar
+    updateOwnProfile(@Req() req, @Body() user: UpdateUserDto) {
+        const userId = req.user.id; 
+        return this.usersService.update(userId, user);
     }
-    
+
+    // Solo admin puede modificar cualquier usuario
+    @UseGuards(JwtAuthGuard)
+    @hasRoles(JwtRole.ADMIN) // <- solo admin
+    @Put(':id') // http://localhost:3000/users/:id
+    updateByAdmin(@Param('id', ParseIntPipe) id: number, @Body() user: UpdateUserDto) {
+    return this.usersService.update(id, user);
+    }
 
 }
