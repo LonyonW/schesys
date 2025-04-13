@@ -69,6 +69,11 @@ export class AuthService {
             throw new HttpException('Email not found', HttpStatus.NOT_FOUND); //404
         }
 
+        // Verificar si el usuario está activo
+        if (!userFound.is_active) {
+            throw new HttpException('User is inactive', HttpStatus.FORBIDDEN); //403
+        }
+
         const passwordMatches = await compare(password, userFound.password);
 
         if (!passwordMatches) {
