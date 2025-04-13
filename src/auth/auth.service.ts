@@ -16,45 +16,45 @@ export class AuthService {
 ) {}
 
     async register(user: RegisterAuthDto) {
+        const { email, rolesIds } = user;
 
-        const { email } = user;
-
-        const emailExists = await this.usersRepository.findOneBy({ email: email });
+        const emailExists = await this.usersRepository.findOneBy({ email });
 
         if (emailExists) {
-            throw new HttpException('Email already exists', HttpStatus.CONFLICT); //409
+            throw new HttpException('Email already exists', HttpStatus.CONFLICT); // 409
         }
 
-        if (!user.rolesIds || !Array.isArray(user.rolesIds) || user.rolesIds.length === 0) {
+        if (!rolesIds || !Array.isArray(rolesIds) || rolesIds.length === 0) {
             throw new HttpException('At least one role must be specified', HttpStatus.BAD_REQUEST); // 400
         }
 
+        const roles = await this.rolesRepository.findBy({ id: In(rolesIds) });
+
+        // Validar que todos los roles existan
+        const foundRoleIds = roles.map(role => role.id);
+        const invalidRoles = rolesIds.filter(id => !foundRoleIds.includes(id));
+
+        if (invalidRoles.length > 0) {
+            throw new HttpException(`Invalid role(s): ${invalidRoles.join(', ')}`, HttpStatus.BAD_REQUEST); // 400
+        }
+
         const newUser = this.usersRepository.create(user);
-
-
-
-        const rolesIds = user.rolesIds; // Get the roles ids from the user object
-
-        
-        const roles = await this.rolesRepository.findBy({ id: In(rolesIds)}); // Find the roles by ids
-        newUser.roles = roles; // Assign the roles to the user
-
+        newUser.roles = roles;
 
         const userSaved = await this.usersRepository.save(newUser);
 
-        const rolesString = userSaved.roles.map(rol => rol.id); // Get only the ids of the roles
-
-        const payload = { id: userSaved.id, first_name: userSaved.first_name, roles: rolesString }; // Create the payload with user data
-        const token = this.jwtService.sign(payload); // Generate JWT token
+        const rolesString = userSaved.roles.map(rol => rol.id);
+        const payload = { id: userSaved.id, first_name: userSaved.first_name, roles: rolesString };
+        const token = this.jwtService.sign(payload);
 
         const data = {
             user: userSaved,
             token: 'Bearer ' + token,
-        }
+        };
 
-        delete data.user.password; // Remove password from user data
+        delete data.user.password;
 
-        return data
+        return data;
     }
 
     async login(loginData: LoginAuthDto) {
