@@ -102,14 +102,15 @@ export class AuthService {
     }
 
     async sendPasswordResetLink(forgotData: ForgotPasswordDto): Promise<{ message: string }> {
+
         const { email } = forgotData;
-        console.log('email:', forgotData); // temporal
+        //console.log('email:', forgotData); // temporal
+        
         const user = await this.usersRepository.findOne({ 
           where: { email: email },
           relations: ['roles'] // Include roles in the query
         });
 
-        //const user = await this.usersRepository.findOneBy({ email });
 
         if (!user) {
           throw new HttpException('User not found', HttpStatus.NOT_FOUND); //404
@@ -123,13 +124,12 @@ export class AuthService {
         const resetLink = `https://frontend.com/reset-password?token=${token}`;
       
         // Integrar el servicio
-        // await this.mailService.sendResetEmail(email, resetLink);
         await this.mailService.sendResetEmail(user.email, resetLink);
       
-        console.log('Reset link:', resetLink); // temporal
-        console.log('Token:', token); // temporal
-        console.log('Email:', user.email); // temporal
-        console.log('user:', user.id); // temporal
+        //console.log('Reset link:', resetLink); // temporal
+        //console.log('Token:', token); // temporal
+        //console.log('Email:', user.email); // temporal
+        //console.log('user:', user.id); // temporal
       
         return { message: 'Password reset link sent' };
       }
