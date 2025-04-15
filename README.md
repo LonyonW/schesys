@@ -4,10 +4,22 @@ Backend NestJS para la gestión académica.
 
 ---
 
-## 🔧 Ejecución local
+## 🔧 Ejecución docker
 
-1. Clona el repositorio
-2. Instala dependencias:
+# Construir imagen y contenedor de la db
+
+docker pull mysql:9.2
+
+docker run --name sysdb -p 3307:3306 -e MYSQL_ROOT_PASSWORD=lonyon123 -d mysql
+
+
+
+# Construir la imagen del backend
+docker build -t schesys-backend .
+
+# Ejecutar el contenedor del backend
+docker run -d --name schesys-backend -p 3000:3000 schesys-backend
+
 
 ```bash
 npm install
