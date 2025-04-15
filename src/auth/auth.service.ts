@@ -101,11 +101,11 @@ export class AuthService {
 
     }
 
-    async sendPasswordResetLink(forgotData: ForgotPasswordDto): Promise<{ message: string }> {
+    async sendPasswordResetLink(forgotData: ForgotPasswordDto): Promise<{ message: string, token: string }> {
 
         const { email } = forgotData;
         //console.log('email:', forgotData); // temporal
-        
+
         const user = await this.usersRepository.findOne({ 
           where: { email: email },
           relations: ['roles'] // Include roles in the query
@@ -131,13 +131,16 @@ export class AuthService {
         //console.log('Email:', user.email); // temporal
         //console.log('user:', user.id); // temporal
       
-        return { message: 'Password reset link sent' };
+        return {
+          message: 'Password reset link sent',
+          token: token, // o simplemente `token`
+        };
       }
       
       async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
         try {
           const { email } = this.jwtService.verify(token, {
-            secret: process.env.JWT_RESET_SECRET,
+            secret: 'process.env.JWT_RESET_SECRET', // chambonada para probar
           });
       
           const user = await this.usersRepository.findOneBy({ email });
