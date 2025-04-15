@@ -1,3 +1,21 @@
+# Schesys Backend
+
+Backend NestJS para la gestión académica.
+
+---
+
+## 🔧 Ejecución local
+
+1. Clona el repositorio
+2. Instala dependencias:
+
+```bash
+npm install
+
+
+
+
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
 </p>
