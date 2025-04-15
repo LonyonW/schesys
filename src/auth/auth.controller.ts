@@ -6,6 +6,8 @@ import { hasRoles } from './jwt/has-roles';
 import { JwtRole } from './jwt/jwt-role';
 import { JwtAuthGuard } from './jwt/jwt-auth.guard';
 import { JwtRolesGuard } from './jwt/jwt-roles.guard';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -23,5 +25,15 @@ export class AuthController {
     @Post('login') // http://localhost:3000/auth/login -> POST
     login(@Body() loginData: LoginAuthDto) {
         return this.authService.login(loginData);
+    }
+
+    @Post('forgot-password')
+    async forgotPassword(@Body() forgotData: ForgotPasswordDto) {
+    return this.authService.sendPasswordResetLink(forgotData);
+    }
+    
+    @Post('reset-password')
+    async resetPassword(@Body() dto: ResetPasswordDto) {
+    return this.authService.resetPassword(dto.token, dto.new_password);
     }
 }

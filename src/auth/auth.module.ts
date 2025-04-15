@@ -8,6 +8,8 @@ import { jwtConstants } from './jwt/jwt.constants';
 import { JwtStrategy } from './jwt/jwt.estrategy';
 import { RolesService } from 'src/roles/roles.service';
 import { Rol } from 'src/roles/rol.entity';
+import { MailModule } from '../mail/mail.module'; // o './mail/mail.module' según tu estructura
+
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, Rol]),
@@ -16,6 +18,7 @@ import { Rol } from 'src/roles/rol.entity';
     secret: jwtConstants.secret,
     signOptions: { expiresIn: '6h' }, // Token expiration time
   }),
+  MailModule, // Import the MailModule here
 ],
   providers: [AuthService, RolesService, JwtStrategy],
   controllers: [AuthController]

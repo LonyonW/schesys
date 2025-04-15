@@ -7,12 +7,17 @@ import { compare } from 'bcrypt';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { JwtService } from '@nestjs/jwt';
 import { Rol } from 'src/roles/rol.entity';
+import { MailService } from 'src/mail/mail.service';
+import { hash } from "bcrypt";
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+
 
 @Injectable()
 export class AuthService {
     constructor(@InjectRepository(User) private usersRepository: Repository<User>, 
     @InjectRepository(Rol) private rolesRepository: Repository<Rol>,
     private jwtService: JwtService, // Inject the JwtService
+    private mailService: MailService, // Inject your mail service 
 ) {}
 
     async register(user: RegisterAuthDto) {
@@ -95,4 +100,60 @@ export class AuthService {
 
 
     }
+
+    async sendPasswordResetLink(forgotData: ForgotPasswordDto): Promise<{ message: string }> {
+        const { email } = forgotData;
+        console.log('email:', forgotData); // temporal
+        const user = await this.usersRepository.findOne({ 
+          where: { email: email },
+          relations: ['roles'] // Include roles in the query
+        });
+
+        //const user = await this.usersRepository.findOneBy({ email });
+
+        if (!user) {
+          throw new HttpException('User not found', HttpStatus.NOT_FOUND); //404
+        }
+      
+        const token = this.jwtService.sign({ email }, {
+          secret: 'process.env.JWT_RESET_SECRET', // chambonada para probar
+          expiresIn: '15m',
+        });
+      
+        const resetLink = `https://frontend.com/reset-password?token=${token}`;
+      
+        // Integrar el servicio
+        // await this.mailService.sendResetEmail(email, resetLink);
+        await this.mailService.sendResetEmail(user.email, resetLink);
+      
+        console.log('Reset link:', resetLink); // temporal
+        console.log('Token:', token); // temporal
+        console.log('Email:', user.email); // temporal
+        console.log('user:', user.id); // temporal
+      
+        return { message: 'Password reset link sent' };
+      }
+      
+      async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
+        try {
+          const { email } = this.jwtService.verify(token, {
+            secret: process.env.JWT_RESET_SECRET,
+          });
+      
+          const user = await this.usersRepository.findOneBy({ email });
+          if (!user) {
+            throw new HttpException('User not found', HttpStatus.NOT_FOUND); //404
+          }
+      
+          //user.password = await hash(newPassword, 10);
+          user.password = await hash(newPassword, Number(process.env.HASH_SALT)); // hasheo real
+
+          await this.usersRepository.save(user);
+      
+          return { message: 'Password updated successfully' };
+        } catch (e) {
+          throw new HttpException('Invalid or expired token', HttpStatus.UNAUTHORIZED);
+        }
+      }
+      
 }

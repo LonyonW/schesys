@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { RolesModule } from './roles/roles.module';
-
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -21,9 +21,12 @@ import { RolesModule } from './roles/roles.module';
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
+    // ConfigModule.forRoot({
+    //
     UsersModule,
     AuthModule,
     RolesModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService],
