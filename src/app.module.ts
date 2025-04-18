@@ -12,7 +12,7 @@ import { RolesModule } from './roles/roles.module';
     TypeOrmModule.forRoot({
       type: 'mysql',
       //host: 'localhost', // for local development
-      host: '172.17.0.3', // for docker
+      host: '172.17.0.2', // for docker
       //port: 3307, // local
       port: 3306, // docker
       username: 'root',
