@@ -1,5 +1,7 @@
 import { hash } from "bcrypt";
-import { Rol } from "src/roles/rol.entity";
+//import { Rol } from "src/roles/rol.entity";
+import { Rol } from '../roles/rol.entity';
+
 import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, ManyToMany, JoinTable } from "typeorm";
 
 @Entity({ name: 'users' })

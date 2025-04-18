@@ -1,13 +1,15 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/users/user.entity';
+//import { User } from 'src/users/user.entity';
 import { In, Repository } from 'typeorm';
 import { RegisterAuthDto } from './dto/register-auth.dto';
 import { compare } from 'bcrypt';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { JwtService } from '@nestjs/jwt';
-import { Rol } from 'src/roles/rol.entity';
-import { MailService } from 'src/mail/mail.service';
+import { User } from '../users/user.entity';
+import { Rol } from '../roles/rol.entity';
+
+import { MailService } from '../mail/mail.service';
 import { hash } from "bcrypt";
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 
