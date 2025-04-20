@@ -16,11 +16,19 @@ export class SubjectsService {
 
     async create(data: CreateSubjectDto): Promise<Subject> {
         const period = await this.periodRepo.findOneBy({ id: data.academic_period_id });
+
+        const codeExists = await this.subjectRepo.findOneBy({ code: data.code });
         
 
         if (!period) {
             throw new HttpException('Periods related not found', HttpStatus.NOT_FOUND); //404
         }
+
+        if (codeExists) {
+            throw new HttpException('Code already exists', HttpStatus.CONFLICT); // 409
+        } 
+
+
 
         const subject = this.subjectRepo.create({
             code: data.code,
