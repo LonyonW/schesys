@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { RolesModule } from './roles/roles.module';
 import { MailModule } from './mail/mail.module';
+import { AcademicPeriodsModule } from './academic-periods/academic-periods.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { MailModule } from './mail/mail.module';
     AuthModule,
     RolesModule,
     MailModule,
+    AcademicPeriodsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
