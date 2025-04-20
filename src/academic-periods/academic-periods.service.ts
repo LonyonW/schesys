@@ -1,8 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { ConflictException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { AcademicPeriod } from './academic-period.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateAcademicPeriodDto } from './dto/create-academic-period.dto';
+import { UpdateAcademicPeriodDto } from './dto/update-academic-period.dto';
 
 @Injectable()
 export class AcademicPeriodsService {
@@ -40,6 +41,34 @@ export class AcademicPeriodsService {
     
         return this.periodsRepository.find({ where });
     }
+
+    async update(id: number, data: UpdateAcademicPeriodDto)  {
+        const period = await this.periodsRepository.findOneBy({ id: id });
+      
+        if (!period) {
+          throw new HttpException('Academic period not found', HttpStatus.NOT_FOUND); //404
+        }
+      
+        // Optional: avoid conflicts (e.g., same info string as another period)
+        if (data.name) {
+          const conflict = await this.periodsRepository.findOne({
+            where: { name: data.name },
+          });
+      
+          if (conflict && conflict.id !== id) {
+            throw new ConflictException('Another period already uses this code'); // 409 conflict
+          }
+      
+          period.name = data.name;
+        }
+      
+        if (data.is_active !== undefined) {
+          period.is_active = data.is_active;
+        }
+      
+        const updatedPeriod = Object.assign(period, data);
+        return this.periodsRepository.save(updatedPeriod);
+      }
   
 
 

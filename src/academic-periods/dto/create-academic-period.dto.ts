@@ -1,5 +1,5 @@
 // src/periodos/dto/create-periodo-academico.dto.ts
-import { IsBoolean, IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
 
 export class CreateAcademicPeriodDto {
   @IsString()
@@ -11,6 +11,7 @@ export class CreateAcademicPeriodDto {
   @IsOptional()
   aditional_info?: string;
 
-  @IsBoolean() // seguro?
+  //@IsBoolean() // seguro?
+  @IsNotEmpty() 
   is_active: boolean;
 }
