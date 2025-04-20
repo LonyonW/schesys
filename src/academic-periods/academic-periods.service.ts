@@ -27,5 +27,20 @@ export class AcademicPeriodsService {
 
     }
 
+    async findPeriods(filter: { id?: string; is_active?: boolean }): Promise<AcademicPeriod[]> {
+        const where: any = {};
+    
+        if (filter.id) {
+          where.id = filter.id;
+        }
+    
+        if (typeof filter.is_active === 'boolean') {
+          where.is_active = filter.is_active;
+        }
+    
+        return this.periodsRepository.find({ where });
+    }
+  
+
 
 }
