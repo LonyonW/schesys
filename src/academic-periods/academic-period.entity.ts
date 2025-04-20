@@ -1,6 +1,6 @@
 // src/periodos/entities/periodo-academico.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
-//import { Materia } from 'src/materias/entities/materia.entity';
+import { Subject } from 'src/subjects/subject.entity';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
 @Entity({ name: 'academic_periods' })
 export class AcademicPeriod {
@@ -18,6 +18,6 @@ export class AcademicPeriod {
   @Column({ default: true })
   is_active: boolean;
 
-  //@OneToMany(() => Materia, materia => materia.periodoAcademico)
-  //materias: Materia[];
+  @OneToMany(() => Subject, subject => subject.academicPeriod)
+  subjects: Subject[];
 }
