@@ -1,0 +1,36 @@
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+
+//import { Teacher } from 'src/teachers/entities/teacher.entity'; // Opcional si usas relación con docente
+import { Subject } from 'src/subjects/subject.entity';
+
+@Entity('groups')
+export class Group {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
+  code: string;
+
+  @Column({ type: 'smallint' })
+  number: number;
+
+  @Column({ default: 20, type: 'smallint' })
+  capacity: number;
+
+  @Column({ default: true })
+  is_active: boolean;
+
+  @Column({ type: 'text', nullable: true })
+  comments: string;
+
+  @ManyToOne(() => Subject, subject => subject.groups)
+  @JoinColumn({ name: 'subject_id' })
+  subject: Subject;
+
+  // Optional: future link with teacher
+  /*
+  @ManyToOne(() => Teacher, teacher => teacher.groups, { nullable: true })
+  @JoinColumn({ name: 'teacher_id' })
+  teacher: Teacher;
+  */
+}
