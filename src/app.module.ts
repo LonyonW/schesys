@@ -8,6 +8,7 @@ import { RolesModule } from './roles/roles.module';
 import { MailModule } from './mail/mail.module';
 import { AcademicPeriodsModule } from './academic-periods/academic-periods.module';
 import { SubjectsModule } from './subjects/subjects.module';
+import { GroupsModule } from './groups/groups.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { SubjectsModule } from './subjects/subjects.module';
     MailModule,
     AcademicPeriodsModule,
     SubjectsModule,
+    GroupsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
