@@ -1,9 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Subject } from './subject.entity';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { CreateSubjectDto } from './dto/create-subject.dto';
 import { AcademicPeriod } from 'src/academic-periods/academic-period.entity';
+import { FilterSubjectDto } from './dto/filter-subject.dto';
 
 @Injectable()
 export class SubjectsService {
@@ -44,6 +45,20 @@ export class SubjectsService {
 
         return this.subjectRepo.save(subject);
     }
+
+    async searchSubjects(filter: FilterSubjectDto): Promise<Subject[]> {
+        const where: any = {};
+      
+        if (filter.code) {
+          where.code = filter.code;
+        }
+      
+        if (filter.name) {
+          where.name = ILike(`%${filter.name}%`); // para buscar por nombre
+        }
+      
+        return this.subjectRepo.find({ where });
+      }
 
 
 }
