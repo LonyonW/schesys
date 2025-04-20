@@ -75,7 +75,7 @@ export class SubjectsService {
         if (data.code) {
             const conflict = await this.subjectRepo.findOne({ where: { code: data.code } });
             if (conflict && conflict.id !== id) {
-                throw new ConflictException('Another period already uses this code'); // 409 conflict
+                throw new ConflictException('Another subject already uses this code'); // 409 conflict
             }
             subject.code = data.code;
         }
