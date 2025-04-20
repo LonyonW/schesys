@@ -13,14 +13,14 @@ export class AcademicPeriodsController {
 
     constructor(private periodsService: AcademicPeriodsService) {}
 
-    @hasRoles(JwtRole.DIRECTOR) // PTOTECCION DE RUTAS por rol
+    @hasRoles(JwtRole.DIRECTOR, JwtRole.ADMIN) // PTOTECCION DE RUTAS por rol
     @UseGuards(JwtAuthGuard, JwtRolesGuard) // PTOTECCION DE RUTAS token obligado
     @Post('register') // http://localhost:3000/academic-periods/register -> POST
     register(@Body() academicPeriod: CreateAcademicPeriodDto) {
         return this.periodsService.create(academicPeriod);
     }
 
-    @hasRoles(JwtRole.DIRECTOR, JwtRole.ADMIN) // PTOTECCION DE RUTAS por rol
+    @hasRoles(JwtRole.DIRECTOR, JwtRole.ADMIN, JwtRole.SECRETARY) // PTOTECCION DE RUTAS por rol
     @UseGuards(JwtAuthGuard, JwtRolesGuard) // PTOTECCION DE RUTAS token obligado
     @Get()
     async getAll(@Query() filter: FilterAcademicPeriodDto): Promise<AcademicPeriod[]> {
