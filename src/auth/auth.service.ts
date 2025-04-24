@@ -16,8 +16,8 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 export class AuthService {
     constructor(@InjectRepository(User) private usersRepository: Repository<User>, 
     @InjectRepository(Rol) private rolesRepository: Repository<Rol>,
-    private jwtService: JwtService, // Inject the JwtService
-    private mailService: MailService, // Inject your mail service 
+    private jwtService: JwtService, 
+    private mailService: MailService, 
 ) {}
 
     async register(user: RegisterAuthDto) {
@@ -26,11 +26,11 @@ export class AuthService {
         const emailExists = await this.usersRepository.findOneBy({ email });
 
         if (emailExists) {
-            throw new HttpException('Email already exists', HttpStatus.CONFLICT); // 409
+            throw new HttpException('Email already exists', HttpStatus.CONFLICT); // 409 error de conflicto
         }
 
         if (!rolesIds || !Array.isArray(rolesIds) || rolesIds.length === 0) {
-            throw new HttpException('At least one role must be specified', HttpStatus.BAD_REQUEST); // 400
+            throw new HttpException('At least one role must be specified', HttpStatus.BAD_REQUEST); // 400 error de bad request
         }
 
         const roles = await this.rolesRepository.findBy({ id: In(rolesIds) });
@@ -40,7 +40,7 @@ export class AuthService {
         const invalidRoles = rolesIds.filter(id => !foundRoleIds.includes(id));
 
         if (invalidRoles.length > 0) {
-            throw new HttpException(`Invalid role(s): ${invalidRoles.join(', ')}`, HttpStatus.BAD_REQUEST); // 400
+            throw new HttpException(`Invalid role(s): ${invalidRoles.join(', ')}`, HttpStatus.BAD_REQUEST); // 400 error de bad request
         }
 
         const newUser = this.usersRepository.create(user);
@@ -67,35 +67,35 @@ export class AuthService {
         const { email, password } = loginData;
         const userFound = await this.usersRepository.findOne({ 
             where: { email: email },
-            relations: ['roles'] // Include roles in the query
+            relations: ['roles'] // Incluir el rol en la query
          }); 
 
         if (!userFound) {
-            throw new HttpException('Email not found', HttpStatus.NOT_FOUND); //404
+            throw new HttpException('Email not found', HttpStatus.NOT_FOUND); //404 error de no encontrado
         }
 
         // Verificar si el usuario está activo
         if (!userFound.is_active) {
-            throw new HttpException('User is inactive', HttpStatus.FORBIDDEN); //403
+            throw new HttpException('User is inactive', HttpStatus.FORBIDDEN); //403 error de prohibido
         }
 
-        const passwordMatches = await compare(password, userFound.password);
+        const passwordMatches = await compare(password, userFound.password); // comparacion de hashes de password
 
         if (!passwordMatches) {
-            throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED); //401
+            throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED); //401 no autorizado credenciales invalidas
         }
 
         const rolesIds = userFound.roles.map(rol => rol.id); // Get only de ids of the roles
 
         const payload = { id: userFound.id, first_name: userFound.first_name, roles: rolesIds };
-        const token = this.jwtService.sign(payload); // Generate JWT token
+        const token = this.jwtService.sign(payload); // Generar el JWT token usando id, first_name y rol
 
         const data = {
             user: userFound,
             token: 'Bearer ' + token,
         }
 
-        delete data.user.password; // Remove password from user data
+        delete data.user.password; // quitar la password del retorno
         return data;
 
 
@@ -104,7 +104,6 @@ export class AuthService {
     async sendPasswordResetLink(forgotData: ForgotPasswordDto): Promise<{ message: string, token: string }> {
 
         const { email } = forgotData;
-        //console.log('email:', forgotData); // temporal
 
         const user = await this.usersRepository.findOne({ 
           where: { email: email },
@@ -113,43 +112,38 @@ export class AuthService {
 
 
         if (!user) {
-          throw new HttpException('User not found', HttpStatus.NOT_FOUND); //404
+          throw new HttpException('User not found', HttpStatus.NOT_FOUND); //404 usuario no encontrado
         }
       
         const token = this.jwtService.sign({ email }, {
-          secret: 'process.env.JWT_RESET_SECRET', // chambonada para probar
+          secret: 'process.env.JWT_RESET_SECRET', //  para probar unicamente CAMBIAR
           expiresIn: '15m',
         });
       
         const resetLink = `https://frontend.com/reset-password?token=${token}`;
       
-        // Integrar el servicio
+        // Integrar el servicio de mail
         await this.mailService.sendResetEmail(user.email, resetLink);
-      
-        //console.log('Reset link:', resetLink); // temporal
-        //console.log('Token:', token); // temporal
-        //console.log('Email:', user.email); // temporal
-        //console.log('user:', user.id); // temporal
       
         return {
           message: 'Password reset link sent',
-          token: token, // o simplemente `token`
+          token: token, 
         };
       }
       
       async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
         try {
           const { email } = this.jwtService.verify(token, {
-            secret: 'process.env.JWT_RESET_SECRET', // chambonada para probar
+            secret: 'process.env.JWT_RESET_SECRET', // chambonada para probar CAMBIAR
           });
       
           const user = await this.usersRepository.findOneBy({ email });
           if (!user) {
-            throw new HttpException('User not found', HttpStatus.NOT_FOUND); //404
+            throw new HttpException('User not found', HttpStatus.NOT_FOUND); //404 usuario no encontrado
           }
       
           //user.password = await hash(newPassword, 10);
-          user.password = await hash(newPassword, Number(process.env.HASH_SALT)); // hasheo real
+          user.password = await hash(newPassword, Number(process.env.HASH_SALT)); // rehasheo de la nueva password
 
           await this.usersRepository.save(user);
       

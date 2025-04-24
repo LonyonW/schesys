@@ -24,8 +24,6 @@ import { GroupsModule } from './groups/groups.module';
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
-    // ConfigModule.forRoot({
-    //
     UsersModule,
     AuthModule,
     RolesModule,

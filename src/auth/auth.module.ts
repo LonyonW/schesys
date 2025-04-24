@@ -18,7 +18,7 @@ import { MailModule } from '../mail/mail.module'; // o './mail/mail.module' seg√
     secret: jwtConstants.secret,
     signOptions: { expiresIn: '6h' }, // Token expiration time
   }),
-  MailModule, // Import the MailModule here
+  MailModule, // Importar el modulo de correo
 ],
   providers: [AuthService, RolesService, JwtStrategy],
   controllers: [AuthController]

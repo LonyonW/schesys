@@ -8,10 +8,9 @@ export class MailService {
   async sendResetEmail(email: string, resetLink: string) {
     console.log('Email destino:', email);
     await this.mailerService.sendMail({
-      //to: "capuchino67788@gmail.com", // prueba
       to: email,
       subject: 'Recuperación de contraseña',
-      template: 'reset-password', // nombre del archivo .hbs
+      template: 'reset-password', // nombre del archivo template .hbs
       context: {
         url: resetLink,
       },
