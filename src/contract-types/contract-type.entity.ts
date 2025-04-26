@@ -15,6 +15,6 @@ export class ContractType {
   @Column({ type: 'smallint' })
   maxHours: number; // Maximum allowed teaching hours
 
-  @OneToMany(() => Teacher, teacher => teacher.contractType)
+  @OneToMany(() => Teacher, teacher => teacher.contract_type)
   teachers: Teacher[];
 }

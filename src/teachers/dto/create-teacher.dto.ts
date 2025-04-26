@@ -2,22 +2,22 @@ import { IsString, IsEmail, IsBoolean, IsOptional, IsInt } from 'class-validator
 
 export class CreateTeacherDto {
   @IsString()
-  fullName: string;
+  full_name: string;
 
   @IsEmail()
-  institutionalEmail: string;
+  institutional_email: string;
 
   @IsString()
   gender: string;
 
   @IsString()
-  academicLevel: string;
+  academic_level: string;
 
   @IsInt()
-  contractTypeId: number;
+  contract_type_id: number;
 
   @IsBoolean()
-  isActive: boolean;
+  is_active: boolean;
 
   @IsOptional()
   @IsString()
