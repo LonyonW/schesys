@@ -12,6 +12,7 @@ import { GroupsModule } from './groups/groups.module';
 import { ClassroomsModule } from './classrooms/classrooms.module';
 import { ContractTypesModule } from './contract-types/contract-types.module';
 import { TeachersModule } from './teachers/teachers.module';
+import { SessionsModule } from './sessions/sessions.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { TeachersModule } from './teachers/teachers.module';
     ClassroomsModule,
     ContractTypesModule,
     TeachersModule,
+    SessionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
