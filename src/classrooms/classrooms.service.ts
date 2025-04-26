@@ -1,8 +1,9 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import { Injectable, ConflictException, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { Classroom } from './classroom.entity';
 import { CreateClassroomDto } from './dto/create-classroom.dto';
+import { FilterClassroomDto } from './dto/filter-classroom.dto';
 
 @Injectable()
 export class ClassroomsService {
@@ -22,5 +23,25 @@ export class ClassroomsService {
 
     const classroom = this.classroomRepository.create(data);
     return this.classroomRepository.save(classroom);
+  }
+
+  async searchClassrooms(filter: FilterClassroomDto): Promise<Classroom[]> {
+    const where: any = {};
+
+    if (filter.name) {
+      where.name = ILike(`%${filter.name}%`);
+    }
+
+    if (filter.capacity) {
+      where.capacity = filter.capacity;
+    }
+
+    const classrooms = await this.classroomRepository.find({ where });
+
+    if (classrooms.length === 0) {
+      throw new HttpException('No classrooms found with the given criteria.', HttpStatus.NOT_FOUND); //404
+    }
+
+    return classrooms;
   }
 }
