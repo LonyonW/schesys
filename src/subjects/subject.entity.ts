@@ -1,5 +1,5 @@
 // src/subjects/entities/subject.entity.ts
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany, JoinTable } from 'typeorm';
 import { AcademicPeriod } from '../academic-periods/academic-period.entity';
 import { SubjectType } from '../subjects/enums/subject-type.enum';
 import { SubjectComponent } from '../subjects/enums/subject-component.enum';
@@ -34,9 +34,15 @@ export class Subject {
   @Column({ type: 'enum', enum: SubjectComponent })
   component: SubjectComponent;
 
-  @ManyToOne(() => AcademicPeriod, period => period.subjects, { eager: true })
-  @JoinColumn({ name: 'academic_period_id' }) // <--- esto fuerza el nombre
-  academicPeriod: AcademicPeriod;
+  // A subject can belong to many academic periods, and vice versa
+  @ManyToMany(() => AcademicPeriod, period => period.subjects)
+  @JoinTable({
+    name: 'subject_academic_period', // nombre de la tabla intermedia
+    joinColumn: { name: 'subject_id' },
+    inverseJoinColumn: { name: 'academic_period_id' },
+  })
+  academicPeriods: AcademicPeriod[];
+
 
   @OneToMany(() => Group, group => group.subject)
   groups: Group[];
