@@ -22,15 +22,15 @@ export class GroupsService {
     async create(dto: CreateGroupDto): Promise<Group> {
         const subject = await this.subjectRepo.findOneBy({ id: dto.subject_id });
 
-        //const groupExists = await this.groupRepo.findOneBy({ code: dto.code });
+        const groupExists = await this.groupRepo.findOneBy({ code: dto.code });
 
         if (!subject) {
             throw new HttpException('Subject not found', HttpStatus.NOT_FOUND); //404
         }
 
-        //if (groupExists) {
-        //throw new HttpException('Group already exists', HttpStatus.BAD_REQUEST); //400
-        //}
+        if (groupExists) {
+        throw new HttpException('Group already exists', HttpStatus.BAD_REQUEST); //400
+        }
 
 
         const group = this.groupRepo.create({
