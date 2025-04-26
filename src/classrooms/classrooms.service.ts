@@ -4,6 +4,7 @@ import { ILike, Repository } from 'typeorm';
 import { Classroom } from './classroom.entity';
 import { CreateClassroomDto } from './dto/create-classroom.dto';
 import { FilterClassroomDto } from './dto/filter-classroom.dto';
+import { UpdateClassroomDto } from './dto/update-classroom.dto';
 
 @Injectable()
 export class ClassroomsService {
@@ -43,5 +44,17 @@ export class ClassroomsService {
     }
 
     return classrooms;
+  }
+
+  async update(id: number, data: UpdateClassroomDto): Promise<Classroom> {
+    const classroom = await this.classroomRepository.findOneBy({ id });
+
+    if (!classroom) {
+      throw new HttpException('Classroom not found', HttpStatus.NOT_FOUND); //404
+    }
+
+    const updatedClassroom = Object.assign(classroom, data);
+
+    return this.classroomRepository.save(updatedClassroom);
   }
 }
