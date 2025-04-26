@@ -9,6 +9,7 @@ import { MailModule } from './mail/mail.module';
 import { AcademicPeriodsModule } from './academic-periods/academic-periods.module';
 import { SubjectsModule } from './subjects/subjects.module';
 import { GroupsModule } from './groups/groups.module';
+import { ClassroomsModule } from './classrooms/classrooms.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { GroupsModule } from './groups/groups.module';
     AcademicPeriodsModule,
     SubjectsModule,
     GroupsModule,
+    ClassroomsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
