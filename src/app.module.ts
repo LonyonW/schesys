@@ -10,6 +10,8 @@ import { AcademicPeriodsModule } from './academic-periods/academic-periods.modul
 import { SubjectsModule } from './subjects/subjects.module';
 import { GroupsModule } from './groups/groups.module';
 import { ClassroomsModule } from './classrooms/classrooms.module';
+import { ContractTypesModule } from './contract-types/contract-types.module';
+import { TeachersModule } from './teachers/teachers.module';
 
 @Module({
   imports: [
@@ -33,6 +35,8 @@ import { ClassroomsModule } from './classrooms/classrooms.module';
     SubjectsModule,
     GroupsModule,
     ClassroomsModule,
+    ContractTypesModule,
+    TeachersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
