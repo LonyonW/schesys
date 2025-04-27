@@ -9,6 +9,10 @@ import { MailModule } from './mail/mail.module';
 import { AcademicPeriodsModule } from './academic-periods/academic-periods.module';
 import { SubjectsModule } from './subjects/subjects.module';
 import { GroupsModule } from './groups/groups.module';
+import { ClassroomsModule } from './classrooms/classrooms.module';
+import { ContractTypesModule } from './contract-types/contract-types.module';
+import { TeachersModule } from './teachers/teachers.module';
+import { SessionsModule } from './sessions/sessions.module';
 
 @Module({
   imports: [
@@ -24,8 +28,6 @@ import { GroupsModule } from './groups/groups.module';
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
-    // ConfigModule.forRoot({
-    //
     UsersModule,
     AuthModule,
     RolesModule,
@@ -33,6 +35,10 @@ import { GroupsModule } from './groups/groups.module';
     AcademicPeriodsModule,
     SubjectsModule,
     GroupsModule,
+    ClassroomsModule,
+    ContractTypesModule,
+    TeachersModule,
+    SessionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

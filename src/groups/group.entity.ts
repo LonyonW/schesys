@@ -1,14 +1,15 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 
 //import { Teacher } from 'src/teachers/entities/teacher.entity'; // Opcional si usas relación con docente
 import { Subject } from 'src/subjects/subject.entity';
+import { Session } from 'src/sessions/session.entity';
 
 @Entity('groups')
 export class Group {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ unique: true })
   code: string;
 
   @Column({ type: 'smallint' })
@@ -26,6 +27,9 @@ export class Group {
   @ManyToOne(() => Subject, subject => subject.groups)
   @JoinColumn({ name: 'subject_id' })
   subject: Subject;
+
+  @OneToMany(() => Session, session => session.group)
+    sessions: Session[];
 
   // Optional: future link with teacher
   /*

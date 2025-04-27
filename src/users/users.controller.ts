@@ -30,7 +30,7 @@ export class UsersController {
 
     // Los usuarios comunes solo pueden modificar su propio perfil
     @UseGuards(JwtAuthGuard, JwtRolesGuard)
-    @hasRoles(JwtRole.ADMIN, JwtRole.DIRECTOR, JwtRole.SECRETARY) // <- o como tengas tus roles
+    @hasRoles(JwtRole.ADMIN, JwtRole.DIRECTOR, JwtRole.SECRETARY) // roles
     @Put('me') // http://localhost:3000/users/me // me indica que solo el usuario actualmente autenticado se puede modificar
     updateOwnProfile(@Req() req, @Body() user: UpdateUserDto) {
         const userId = req.user.id; // userId viene del token
@@ -39,7 +39,7 @@ export class UsersController {
 
     // Solo admin puede modificar cualquier usuario
     @UseGuards(JwtAuthGuard, JwtRolesGuard)
-    @hasRoles(JwtRole.ADMIN) // <- solo admin
+    @hasRoles(JwtRole.ADMIN) // solo admin
     @Put(':id') // http://localhost:3000/users/:id
     updateByAdmin(@Param('id', ParseIntPipe) id: number, @Body() user: UpdateUserDto) {
     return this.usersService.update(id, user);

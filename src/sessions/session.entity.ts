@@ -1,0 +1,30 @@
+import { Classroom } from 'src/classrooms/classroom.entity';
+import { Group } from 'src/groups/group.entity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Weekday } from './enums/session-weekday.enum';
+
+
+
+@Entity({ name: 'sessions' })
+export class Session {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @ManyToOne(() => Group, (group) => group.sessions)
+  group: Group;
+
+  @ManyToOne(() => Classroom, { nullable: true })
+  classroom: Classroom;
+
+  @Column({
+    type: 'enum',
+    enum: Weekday,
+  })
+  day_of_week: Weekday;
+
+  @Column({ type: 'time' })
+  start_time: string; // Format 'HH:mm:ss'
+
+  @Column({ type: 'smallint' })
+  duration_hours: number;
+}
