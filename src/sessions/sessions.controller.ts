@@ -28,7 +28,7 @@ export class SessionsController {
 
     @hasRoles(JwtRole.DIRECTOR, JwtRole.ADMIN) // PTOTECCION DE RUTAS por rol
     @UseGuards(JwtAuthGuard, JwtRolesGuard) // PTOTECCION DE RUTAS token obligado
-    @Patch(':id')
+    @Patch(':id') // http://localhost:3000/sessions/1
     update(
         @Param('id', ParseIntPipe) id: number,
         @Body() updateSessionDto: UpdateSessionDto,
