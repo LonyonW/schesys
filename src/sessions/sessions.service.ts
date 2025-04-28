@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Session } from './session.entity';
@@ -19,7 +19,7 @@ export class SessionsService {
 
     @InjectRepository(Classroom)
     private classroomRepo: Repository<Classroom>,
-  ) {}
+  ) { }
 
   async create(data: CreateSessionDto): Promise<Session> {
     const group = await this.groupRepo.findOne({ where: { id: data.group_id } });
@@ -79,6 +79,20 @@ export class SessionsService {
         if (!classroom) throw new NotFoundException('Classroom not found');
         session.classroom = classroom;
       }
+    }
+
+    // --- Validaciones específicas del requisito RF026 ---
+    // Validar hora de inicio (6:00 am a 8:00 pm)
+    if (data.start_time) {
+      const [hours, minutes] = data.start_time.split(':').map(Number);
+      const totalMinutes = hours * 60 + minutes;
+      const minMinutes = 6 * 60;   // 6:00 am
+      const maxMinutes = 20 * 60;  // 8:00 pm
+
+      if (totalMinutes < minMinutes || totalMinutes > maxMinutes) {
+        throw new HttpException('Start time must be between 06:00 AM and 08:00 PM', HttpStatus.BAD_REQUEST); //400
+      }
+      session.start_time = data.start_time;
     }
 
     session.day_of_week = data.day_of_week ?? session.day_of_week;

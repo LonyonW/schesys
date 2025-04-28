@@ -146,11 +146,11 @@ export class GroupsService {
             totalHours += session.duration_hours;
         }
 
-        console.log('Total hours:', totalHours);
-        console.log('Max hours:', teacher.contract_type.max_hours);
 
-        if (totalHours > teacher.contract_type.max_hours) {
-            throw new HttpException('The teacher exceeds the maximum allowed hours according to their contract.', HttpStatus.BAD_REQUEST); //400
+        const maxHours = teacher.contract_type.max_hours;
+
+        if (totalHours > maxHours) {
+            throw new HttpException(`Teacher exceeds allowed hours: ${totalHours}/${maxHours} hours`, HttpStatus.BAD_REQUEST); //400
         }
 
         group.teacher = teacher; // Relación directa
