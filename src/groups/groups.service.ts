@@ -10,6 +10,7 @@ import { FilterGroupDto } from './dto/filter-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
 import { AssignTeacherDto } from './dto/assign-teacher.dto';
 import { Teacher } from 'src/teachers/teacher.entity';
+import { Session } from 'src/sessions/session.entity';
 
 @Injectable()
 export class GroupsService {
@@ -22,6 +23,9 @@ export class GroupsService {
 
         @InjectRepository(Teacher)
         private readonly teacherRepo: Repository<Teacher>,
+
+        @InjectRepository(Session)
+        private readonly sessionRepo: Repository<Session>,
     ) { }
 
     async create(dto: CreateGroupDto): Promise<Group> {
@@ -109,10 +113,44 @@ export class GroupsService {
             throw new HttpException('Group not found', HttpStatus.NOT_FOUND); //404
         }
 
-        const teacher = await this.teacherRepo.findOne({ where: { id: data.teacher_id } });
+
+
+
+        const teacher = await this.teacherRepo.findOne({
+            where: { id: data.teacher_id },
+            relations: ['contract_type'],
+        });
 
         if (!teacher) {
             throw new HttpException('Teacher not found', HttpStatus.NOT_FOUND); //404
+        }
+
+        const teacherGroups = await this.groupRepo.find({
+            where: { teacher: { id: data.teacher_id } },
+            relations: ['sessions'], // necesitamos sessions
+        });
+
+        let totalHours = 0;
+        for (const tg of teacherGroups) {
+            for (const session of tg.sessions) {
+                totalHours += session.duration_hours;
+            }
+        }
+
+        // Ahora consultamos las sesiones del grupo nuevo también (opcional si quieres contar el nuevo grupo)
+        const newGroupSessions = await this.sessionRepo.find({
+            where: { group: { id: groupId } },
+        });
+
+        for (const session of newGroupSessions) {
+            totalHours += session.duration_hours;
+        }
+
+        console.log('Total hours:', totalHours);
+        console.log('Max hours:', teacher.contract_type.max_hours);
+
+        if (totalHours > teacher.contract_type.max_hours) {
+            throw new HttpException('The teacher exceeds the maximum allowed hours according to their contract.', HttpStatus.BAD_REQUEST); //400
         }
 
         group.teacher = teacher; // Relación directa

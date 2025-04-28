@@ -37,8 +37,5 @@ export class Group {
   @JoinColumn({ name: 'teacher_id' })
   teacher: Teacher;
 
-  @Column({ name: 'teacher_id', nullable: true })
-  teacher_id: number;
-
 
 }
