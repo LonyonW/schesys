@@ -10,6 +10,8 @@ export class ValidationsService {
         private sessionRepo: Repository<Session>,
     
       ) { }
+
+      // validar que acepte valores nulos en las sesiones excepto group_id y su propio id
     async validateTeacherSessionConflicts(teacherId: number, extraSession?: Session): Promise<void> {
         const sessions = await this.sessionRepo.find({
           where: { group: { teacher: { id: teacherId } } },
