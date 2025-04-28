@@ -50,6 +50,8 @@ export class SessionsService {
       await this.validationsService.validateClassroomSessionConflicts(classroom.id, newSession);
     }
 
+    await this.validationsService.validateSemesterSessionConflicts(group.subject.semester, newSession);
+
     return this.sessionRepo.save(newSession);
   }
 
@@ -123,6 +125,9 @@ export class SessionsService {
     await this.validationsService.validateTeacherSessionConflicts(session.group.teacher.id, session);
 
     await this.validationsService.validateClassroomSessionConflicts(session.classroom?.id, session);
+
+    await this.validationsService.validateSemesterSessionConflicts(session.group.subject.semester, session);
+
 
 
     return this.sessionRepo.save(session);

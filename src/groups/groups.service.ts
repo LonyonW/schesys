@@ -105,6 +105,9 @@ export class GroupsService {
             (group as any).weekly_sessions = data.weekly_sessions;
         }
 
+
+        
+
         const updatedGroup = Object.assign(group, data);
         return this.groupRepo.save(updatedGroup); // REVISAR ESTO
     }
