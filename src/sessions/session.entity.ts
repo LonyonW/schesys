@@ -1,6 +1,6 @@
 import { Classroom } from 'src/classrooms/classroom.entity';
 import { Group } from 'src/groups/group.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Weekday } from './enums/session-weekday.enum';
 
 
@@ -11,9 +11,11 @@ export class Session {
   id: number;
 
   @ManyToOne(() => Group, (group) => group.sessions)
+  @JoinColumn({ name: 'group_id' }) 
   group: Group;
 
   @ManyToOne(() => Classroom, { nullable: true })
+  @JoinColumn({ name: 'classroom_id' }) 
   classroom: Classroom;
 
   @Column({

@@ -1,5 +1,6 @@
 import { ContractType } from 'src/contract-types/contract-type.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Group } from 'src/groups/group.entity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity('teachers')
 export class Teacher {
@@ -26,4 +27,8 @@ export class Teacher {
 
   @ManyToOne(() => ContractType, contractType => contractType.teachers, { eager: true })
   contract_type: ContractType;
+  groups: any;
+
+  @OneToMany(() => Group, Group => Group.teacher)
+      sessions: Group[];
 }
