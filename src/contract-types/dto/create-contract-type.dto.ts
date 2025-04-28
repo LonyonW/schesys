@@ -6,8 +6,8 @@ export class CreateContractTypeDto {
 
   @IsOptional()
   @IsString()
-  contractResolution?: string;
+  contract_resolution?: string;
 
   @IsInt()
-  maxHours: number;
+  max_hours: number;
 }
