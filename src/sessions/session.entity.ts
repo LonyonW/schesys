@@ -21,12 +21,13 @@ export class Session {
   @Column({
     type: 'enum',
     enum: Weekday,
+    nullable: true
   })
   day_of_week: Weekday;
 
-  @Column({ type: 'time' })
+  @Column({ type: 'time', nullable: true })
   start_time: string; // Format 'HH:mm:ss'
 
-  @Column({ type: 'smallint' })
+  @Column({ type: 'smallint', nullable: true })
   duration_hours: number;
 }
