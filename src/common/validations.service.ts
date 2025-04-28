@@ -58,6 +58,49 @@ export class ValidationsService {
           }
         }
       }
+
+      async validateClassroomSessionConflicts(classroomId: number, extraSession?: Session): Promise<void> {
+        const sessions = await this.sessionRepo.find({
+          where: { classroom: { id: classroomId } },
+          relations: ['group', 'classroom'],
+        });
+    
+        if (extraSession) {
+          const index = sessions.findIndex(s => s.id === extraSession.id);
+          if (index !== -1) {
+            sessions[index] = extraSession;
+          } else {
+            sessions.push(extraSession);
+          }
+        }
+    
+        for (let i = 0; i < sessions.length; i++) {
+          for (let j = i + 1; j < sessions.length; j++) {
+            const sessionA = sessions[i];
+            const sessionB = sessions[j];
+    
+            if (sessionA.day_of_week === sessionB.day_of_week) {
+              const sessionAStart = this.timeStringToMinutes(sessionA.start_time);
+              const sessionAEnd = sessionAStart + (sessionA.duration_hours * 60);
+    
+              const sessionBStart = this.timeStringToMinutes(sessionB.start_time);
+              const sessionBEnd = sessionBStart + (sessionB.duration_hours * 60);
+    
+              const overlap = sessionAStart < sessionBEnd && sessionBStart < sessionAEnd;
+    
+              if (overlap) {
+                const conflictMessage = `Classroom schedule conflict detected:
+Session A [ID: ${sessionA.id ?? 'unsaved'}] (Group ID: ${sessionA.group?.id ?? 'unknown'}, Classroom ID: ${sessionA.classroom?.id ?? 'unknown'})
+overlaps with
+Session B [ID: ${sessionB.id ?? 'unsaved'}] (Group ID: ${sessionB.group?.id ?? 'unknown'}, Classroom ID: ${sessionB.classroom?.id ?? 'unknown'})
+`
+;
+                throw new HttpException(conflictMessage, HttpStatus.BAD_REQUEST);
+              }
+            }
+          }
+        }
+      }
     
       // Helper to convert "HH:MM:SS" to minutes
       private timeStringToMinutes(timeString: string): number {

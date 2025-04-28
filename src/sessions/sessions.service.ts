@@ -25,7 +25,7 @@ export class SessionsService {
   ) { }
 
   async create(data: CreateSessionDto): Promise<Session> {
-    const group = await this.groupRepo.findOne({ where: { id: data.group_id } });
+    const group = await this.groupRepo.findOne({ where: { id: data.group_id }, relations: ['teacher', 'subject'] });
     if (!group) throw new NotFoundException('Group not found');
 
     let classroom = null;
@@ -41,6 +41,14 @@ export class SessionsService {
       start_time: data.start_time,
       duration_hours: data.duration_hours,
     });
+
+    if (group.teacher) {
+      await this.validationsService.validateTeacherSessionConflicts(group.teacher.id, newSession);
+    }
+  
+    if (classroom) {
+      await this.validationsService.validateClassroomSessionConflicts(classroom.id, newSession);
+    }
 
     return this.sessionRepo.save(newSession);
   }
@@ -113,6 +121,9 @@ export class SessionsService {
     session.duration_hours = data.duration_hours ?? session.duration_hours;
 
     await this.validationsService.validateTeacherSessionConflicts(session.group.teacher.id, session);
+
+    await this.validationsService.validateClassroomSessionConflicts(session.classroom?.id, session);
+
 
     return this.sessionRepo.save(session);
   }
