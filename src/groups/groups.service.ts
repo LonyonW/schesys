@@ -11,6 +11,7 @@ import { UpdateGroupDto } from './dto/update-group.dto';
 import { AssignTeacherDto } from './dto/assign-teacher.dto';
 import { Teacher } from 'src/teachers/teacher.entity';
 import { Session } from 'src/sessions/session.entity';
+import { ValidationsService } from 'src/common/validations.service';
 
 @Injectable()
 export class GroupsService {
@@ -26,6 +27,8 @@ export class GroupsService {
 
         @InjectRepository(Session)
         private readonly sessionRepo: Repository<Session>,
+
+        private readonly validationsService: ValidationsService,
     ) { }
 
     async create(dto: CreateGroupDto): Promise<Group> {
@@ -109,6 +112,8 @@ export class GroupsService {
 
     async assignTeacher(groupId: number, data: AssignTeacherDto): Promise<Group> {
         const group = await this.groupRepo.findOne({ where: { id: groupId } });
+
+        
         if (!group) {
             throw new HttpException('Group not found', HttpStatus.NOT_FOUND); //404
         }
@@ -154,6 +159,9 @@ export class GroupsService {
         }
 
         group.teacher = teacher; // Relación directa
+
+        await this.validationsService.validateTeacherSessionConflicts(teacher.id, undefined, groupId);
+
         return this.groupRepo.save(group);
     }
 

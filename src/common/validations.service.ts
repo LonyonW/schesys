@@ -12,11 +12,20 @@ export class ValidationsService {
       ) { }
 
       // validar que acepte valores nulos en las sesiones excepto group_id y su propio id
-    async validateTeacherSessionConflicts(teacherId: number, extraSession?: Session): Promise<void> {
+    async validateTeacherSessionConflicts(teacherId: number, extraSession?: Session, newGroupId?: number): Promise<void> {
         const sessions = await this.sessionRepo.find({
           where: { group: { teacher: { id: teacherId } } },
           relations: ['group', 'group.subject'],
         });
+
+        if (newGroupId) {
+          const newGroupSessions = await this.sessionRepo.find({
+            where: { group: { id: newGroupId } },
+            relations: ['group', 'group.subject'],
+          });
+          // Añade las sesiones del nuevo grupo al array de sesiones
+          sessions.push(...newGroupSessions);
+        }
     
         if (extraSession) {
           // Reemplazar la sesión existente con el mismo ID por extraSession
