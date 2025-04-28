@@ -122,11 +122,18 @@ export class SessionsService {
     session.start_time = data.start_time ?? session.start_time;
     session.duration_hours = data.duration_hours ?? session.duration_hours;
 
-    await this.validationsService.validateTeacherSessionConflicts(session.group.teacher.id, session);
-
-    await this.validationsService.validateClassroomSessionConflicts(session.classroom?.id, session);
-
-    await this.validationsService.validateSemesterSessionConflicts(session.group.subject.semester, session);
+    if (session.group?.teacher?.id) {
+      await this.validationsService.validateTeacherSessionConflicts(session.group.teacher.id, session);
+    }
+    
+    if (session.classroom?.id) {
+      await this.validationsService.validateClassroomSessionConflicts(session.classroom.id, session);
+    }
+    
+    if (session.group?.subject?.semester) {
+      await this.validationsService.validateSemesterSessionConflicts(session.group.subject.semester, session);
+    }
+    
 
 
 
