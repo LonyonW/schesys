@@ -8,6 +8,8 @@ import { Subject } from 'src/subjects/subject.entity';
 import { ILike } from 'typeorm';
 import { FilterGroupDto } from './dto/filter-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
+import { AssignTeacherDto } from './dto/assign-teacher.dto';
+import { Teacher } from 'src/teachers/teacher.entity';
 
 @Injectable()
 export class GroupsService {
@@ -17,6 +19,9 @@ export class GroupsService {
 
         @InjectRepository(Subject)
         private subjectRepo: Repository<Subject>,
+
+        @InjectRepository(Teacher)
+        private readonly teacherRepo: Repository<Teacher>,
     ) { }
 
     async create(dto: CreateGroupDto): Promise<Group> {
@@ -29,7 +34,7 @@ export class GroupsService {
         }
 
         if (groupExists) {
-        throw new HttpException('Group already exists', HttpStatus.BAD_REQUEST); //400
+            throw new HttpException('Group already exists', HttpStatus.BAD_REQUEST); //400
         }
 
 
@@ -65,7 +70,7 @@ export class GroupsService {
 
         return this.groupRepo.find({
             where,
-            relations: ['subject'], // para incluir datos de la materia
+            relations: ['subject', 'teacher'], // para obtener todo lo que contiene la relacion
         });
     }
 
@@ -96,6 +101,24 @@ export class GroupsService {
         const updatedGroup = Object.assign(group, data);
         return this.groupRepo.save(updatedGroup); // REVISAR ESTO
     }
+
+
+    async assignTeacher(groupId: number, data: AssignTeacherDto): Promise<Group> {
+        const group = await this.groupRepo.findOne({ where: { id: groupId } });
+        if (!group) {
+            throw new HttpException('Group not found', HttpStatus.NOT_FOUND); //404
+        }
+
+        const teacher = await this.teacherRepo.findOne({ where: { id: data.teacher_id } });
+
+        if (!teacher) {
+            throw new HttpException('Teacher not found', HttpStatus.NOT_FOUND); //404
+        }
+
+        group.teacher = teacher; // Relación directa
+        return this.groupRepo.save(group);
+    }
+
 
 
 }
