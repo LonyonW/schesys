@@ -13,6 +13,7 @@ import { ClassroomsModule } from './classrooms/classrooms.module';
 import { ContractTypesModule } from './contract-types/contract-types.module';
 import { TeachersModule } from './teachers/teachers.module';
 import { SessionsModule } from './sessions/sessions.module';
+import { ValidationsModule } from './common/validations.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { SessionsModule } from './sessions/sessions.module';
     ContractTypesModule,
     TeachersModule,
     SessionsModule,
+    ValidationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
