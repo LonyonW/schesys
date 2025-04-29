@@ -1,5 +1,6 @@
-import { IsOptional, IsInt, IsEnum, IsString, IsPositive } from 'class-validator';
+import { IsOptional, IsInt, IsEnum, IsString, IsPositive, Matches, Validate } from 'class-validator';
 import { Weekday } from '../enums/session-weekday.enum';
+import { IsWithinWorkingHoursString } from 'src/common/is-within-working-hours-string.validator';
 
 export class UpdateSessionDto {
     @IsOptional()
@@ -16,6 +17,10 @@ export class UpdateSessionDto {
 
     @IsOptional()
     @IsString()
+    @Matches(/^([01]\d|2[0-3]):([0-5]\d)(:[0-5]\d)?$/, {
+        message: 'start_time debe estar en formato HH:mm o HH:mm:ss',
+      })
+      @Validate(IsWithinWorkingHoursString)
     start_time?: string; // Expect 'HH:mm' or 'HH:mm:ss'
 
     @IsOptional()

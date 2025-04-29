@@ -7,6 +7,7 @@ import { JwtAuthGuard } from 'src/auth/jwt/jwt-auth.guard';
 import { JwtRolesGuard } from 'src/auth/jwt/jwt-roles.guard';
 import { FilterGroupDto } from './dto/filter-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
+import { AssignTeacherDto } from './dto/assign-teacher.dto';
 
 @Controller('groups')
 export class GroupsController {
@@ -38,4 +39,16 @@ export class GroupsController {
     ) {
         return this.groupsService.update(id, dto);
     }
+
+
+    @hasRoles(JwtRole.ADMIN, JwtRole.DIRECTOR) // PTOTECCION DE RUTAS por rol
+    @UseGuards(JwtAuthGuard, JwtRolesGuard) // PTOTECCION DE RUTAS token obligado
+    @Patch(':id/assign-teacher')
+    async assignTeacher(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() data: AssignTeacherDto,
+    ) {
+        return this.groupsService.assignTeacher(id, data);
+    }
+
 }

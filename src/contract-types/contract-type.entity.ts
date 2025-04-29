@@ -10,10 +10,10 @@ export class ContractType {
   name: string; // Example: 'Full-time', 'Part-time'
 
   @Column({ type: 'text', nullable: true })
-  contractResolution: string;
+  contract_resolution: string;
 
   @Column({ type: 'smallint' })
-  maxHours: number; // Maximum allowed teaching hours
+  max_hours: number; // Maximum allowed teaching hours
 
   @OneToMany(() => Teacher, teacher => teacher.contract_type)
   teachers: Teacher[];

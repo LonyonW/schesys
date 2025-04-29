@@ -3,6 +3,7 @@ import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, OneToMan
 //import { Teacher } from 'src/teachers/entities/teacher.entity'; // Opcional si usas relación con docente
 import { Subject } from 'src/subjects/subject.entity';
 import { Session } from 'src/sessions/session.entity';
+import { Teacher } from 'src/teachers/teacher.entity';
 
 @Entity('groups')
 export class Group {
@@ -31,10 +32,10 @@ export class Group {
   @OneToMany(() => Session, session => session.group)
     sessions: Session[];
 
-  // Optional: future link with teacher
-  /*
+
   @ManyToOne(() => Teacher, teacher => teacher.groups, { nullable: true })
   @JoinColumn({ name: 'teacher_id' })
   teacher: Teacher;
-  */
+
+
 }
