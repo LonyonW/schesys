@@ -23,6 +23,9 @@ COPY . .
 # Expone el puerto en el que la aplicación NestJS se ejecuta
 EXPOSE 3000
 
+# Compila la aplicación NestJS
+RUN npm run build
+
 # Comando para ejecutar la aplicación cuando se inicia el contenedor
 CMD ["npm", "run", "start:prod"] 
 # CMD ["npm", "run", "start:dev"]
