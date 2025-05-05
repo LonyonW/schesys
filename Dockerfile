@@ -1,32 +1,29 @@
-# Utiliza la imagen oficial de Node.js como base
-FROM node
+# Usa una imagen oficial de Node.js con versión explícita
+FROM node:18
 
-# Instala las herramientas necesarias para compilar bcrypt
+# Instala herramientas necesarias para compilar dependencias nativas como bcrypt
 RUN apt-get update && apt-get install -y build-essential python3
-
 
 # Establece el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-# Copia los archivos package.json y package-lock.json (o yarn.lock si usas Yarn) al directorio de trabajo
+# Copia los archivos de dependencias primero para aprovechar la caché
 COPY package*.json ./
 
-# Instala las dependencias del proyecto
+# Instala dependencias del proyecto
 RUN npm install
 
-# Compila bcrypt
+# Reconstruye bcrypt con las herramientas ya instaladas
 RUN npm rebuild bcrypt --build-from-source
 
-# Copia el resto de los archivos de la aplicación al directorio de trabajo
+# Copia el resto de la aplicación al contenedor
 COPY . .
 
-# Expone el puerto en el que la aplicación NestJS se ejecuta
-EXPOSE 3000
-
-# Compila la aplicación NestJS
+# Compila el código TypeScript a JavaScript (necesario para start:prod)
 RUN npm run build
 
-# Comando para ejecutar la aplicación cuando se inicia el contenedor
-CMD ["npm", "run", "start:prod"] 
-# CMD ["npm", "run", "start:dev"]
+# Expone el puerto que usará NestJS (Render detecta este automáticamente)
+EXPOSE 3000
 
+# Inicia la app en modo producción usando el archivo ya compilado
+CMD ["node", "dist/main.js"]
