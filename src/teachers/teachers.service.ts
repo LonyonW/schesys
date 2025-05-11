@@ -33,7 +33,12 @@ export class TeachersService {
       throw new NotFoundException('Contract type not found');
     }
 
-    const newTeacher = this.teacherRepo.create(data);
+    //const newTeacher = this.teacherRepo.create(data);
+
+    const newTeacher = this.teacherRepo.create({
+      ...data,
+      contract_type: contractType,
+    });
 
     return this.teacherRepo.save(newTeacher);
   }
