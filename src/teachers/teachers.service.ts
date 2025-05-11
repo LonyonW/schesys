@@ -42,7 +42,7 @@ export class TeachersService {
     const where: any = {};
 
     if (filter.name) {
-      where.fullName = ILike(`%${filter.name}%`);
+      where.full_name = ILike(`%${filter.name}%`);
     }
 
     if (filter.is_active !== undefined) {
