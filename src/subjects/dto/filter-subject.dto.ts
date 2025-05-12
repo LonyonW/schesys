@@ -9,4 +9,9 @@ export class FilterSubjectDto {
   @IsOptional()
   @IsString()
   name?: string;
+
+  @IsOptional()
+  @IsString()
+  semester?: string;
 }
+

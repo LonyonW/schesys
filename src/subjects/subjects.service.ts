@@ -52,6 +52,10 @@ export class SubjectsService {
             where.name = ILike(`%${filter.name}%`); // para buscar por nombre
         }
 
+        if (filter.semester) {
+            where.semester = ILike(`%${filter.semester}%`); // para buscar por semestre
+        }
+
         return this.subjectRepo.find({ where });
     }
 
