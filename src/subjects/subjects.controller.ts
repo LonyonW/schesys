@@ -13,8 +13,8 @@ export class SubjectsController {
     constructor(private readonly subjectService: SubjectsService) { }
 
 
-    @hasRoles(JwtRole.ADMIN, JwtRole.DIRECTOR) // PTOTECCION DE RUTAS por rol
-    @UseGuards(JwtAuthGuard, JwtRolesGuard) // PTOTECCION DE RUTAS token obligado
+    @hasRoles(JwtRole.ADMIN, JwtRole.DIRECTOR) // PROTECCION DE RUTAS por rol
+    @UseGuards(JwtAuthGuard, JwtRolesGuard) // PROTECCION DE RUTAS por token
     @Post('create') // http://localhost:3000/subjects/create -> POST
     create(@Body() dto: CreateSubjectDto) {
         return this.subjectService.create(dto);

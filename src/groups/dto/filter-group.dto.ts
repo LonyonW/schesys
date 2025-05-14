@@ -1,4 +1,5 @@
 
+import { Type } from 'class-transformer';
 import { IsOptional, IsString, IsInt } from 'class-validator';
 
 export class FilterGroupDto {
@@ -8,6 +9,7 @@ export class FilterGroupDto {
 
   @IsOptional()
   @IsInt()
+  @Type(() => Number)
   subject_id?: number;
 
   @IsOptional()
