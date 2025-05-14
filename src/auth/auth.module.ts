@@ -8,7 +8,7 @@ import { jwtConstants } from './jwt/jwt.constants';
 import { JwtStrategy } from './jwt/jwt.estrategy';
 import { RolesService } from 'src/roles/roles.service';
 import { Rol } from 'src/roles/rol.entity';
-import { MailModule } from '../mail/mail.module'; // o './mail/mail.module' según tu estructura
+import { MailModule } from '../mail/mail.module'; 
 
 
 @Module({
@@ -16,7 +16,7 @@ import { MailModule } from '../mail/mail.module'; // o './mail/mail.module' seg�
   JwtModule.register({
     global: true,
     secret: jwtConstants.secret,
-    signOptions: { expiresIn: '6h' }, // Token expiration time
+    signOptions: { expiresIn: '6h' }, // Tiempo de expiración del token de sesion
   }),
   MailModule, // Importar el modulo de correo
 ],

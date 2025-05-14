@@ -15,13 +15,13 @@ import { TeachersModule } from './teachers/teachers.module';
 import { SessionsModule } from './sessions/sessions.module';
 import { ValidationsModule } from './common/validations.module';
 
+
+// guardar credenciales secretas *
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      //host: 'localhost', // for local development
-      host: 'turntable.proxy.rlwy.net', // for docker
-      //port: 3307, // local
+      host: 'turntable.proxy.rlwy.net', 
       port: 47470, // docker
       username: 'root',
       password: 'vbRSQisHrsTbVQSyeClONQJmoQjytwhX',

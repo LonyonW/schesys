@@ -1,5 +1,5 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-dto-user';
+import { Body, Controller, Get, Param, ParseIntPipe, Put, UseGuards } from '@nestjs/common';
+//import { CreateUserDto } from './dto/create-dto-user';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt-auth.guard';
 import { UpdateUserDto } from './dto/update-dto-user';
@@ -22,16 +22,17 @@ export class UsersController {
         return this.usersService.findall();
     }
 
+    /*
     @Post() // http://localhost:3000/users -> POST
     create(@Body() user: CreateUserDto) {
         return this.usersService.create(user);
     }
-
+    */
 
     // Los usuarios comunes solo pueden modificar su propio perfil
     @UseGuards(JwtAuthGuard, JwtRolesGuard)
     @hasRoles(JwtRole.ADMIN, JwtRole.DIRECTOR, JwtRole.SECRETARY) // roles
-    @Put('me') // http://localhost:3000/users/me // me indica que solo el usuario actualmente autenticado se puede modificar
+    @Put('me') // http://localhost:3000/users/me // endpoint para modificar perfil del propio usuario unicamente
     updateOwnProfile(@Req() req, @Body() user: UpdateUserDto) {
         const userId = req.user.id; // userId viene del token
         return this.usersService.update(userId, user);

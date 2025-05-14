@@ -85,7 +85,7 @@ export class AuthService {
             throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED); //401 no autorizado credenciales invalidas
         }
 
-        const rolesIds = userFound.roles.map(rol => rol.id); // Get only de ids of the roles
+        const rolesIds = userFound.roles.map(rol => rol.id); // obtener los ids de los roles
 
         const payload = { id: userFound.id, first_name: userFound.first_name, roles: rolesIds };
         const token = this.jwtService.sign(payload); // Generar el JWT token usando id, first_name y rol
@@ -95,7 +95,7 @@ export class AuthService {
             token: 'Bearer ' + token,
         }
 
-        delete data.user.password; // quitar la password del retorno
+        delete data.user.password; // quitar la password del retorno para que no se vea en el frontend
         return data;
 
 
@@ -107,7 +107,7 @@ export class AuthService {
 
         const user = await this.usersRepository.findOne({ 
           where: { email: email },
-          relations: ['roles'] // Include roles in the query
+          relations: ['roles'] 
         });
 
 
@@ -134,7 +134,7 @@ export class AuthService {
       async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
         try {
           const { email } = this.jwtService.verify(token, {
-            secret: 'process.env.JWT_RESET_SECRET', // chambonada para probar CAMBIAR
+            secret: 'process.env.JWT_RESET_SECRET', // para probar unicamente CAMBIAR
           });
       
           const user = await this.usersRepository.findOneBy({ email });

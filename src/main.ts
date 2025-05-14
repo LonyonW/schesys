@@ -5,14 +5,12 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
-    //origin: ['http://localhost:5173'], // habilitar IP del front
-    origin: true, // Para pruebas mientras el front no este desplegado
+    origin: ['https://sage-frontend-3dek.onrender.com'], // PRODUCCION
+    //origin: true, // Para pruebas mientras el front no este desplegado
     methods: 'GET,POST,PUT,PATCH,DELETE',
     credentials: true, // para los tokens
   });
   app.useGlobalPipes(new ValidationPipe({ forbidUnknownValues: false, transform: true, whitelist: true})); //  404
-  //await app.listen(3000, '192.168.1.9'); // en local
-  //await app.listen(3000, 'localhost'); // en local
-  await app.listen(3000, '0.0.0.0'); // para dockerizar
+  await app.listen(3000, '0.0.0.0'); 
 }
 bootstrap();
