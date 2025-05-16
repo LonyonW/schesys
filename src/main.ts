@@ -5,8 +5,8 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
-    origin: ['https://sage-frontend-3dek.onrender.com'], // PRODUCCION
-    //origin: true, // Para pruebas mientras el front no este desplegado
+    //origin: ['https://sage-frontend-3dek.onrender.com'], // PRODUCCION
+    origin: true, // Para pruebas mientras el front no este desplegado
     methods: 'GET,POST,PUT,PATCH,DELETE',
     credentials: true, // para los tokens
   });
