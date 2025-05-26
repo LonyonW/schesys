@@ -56,23 +56,6 @@ export class GroupsService {
 
         const savedGroup = await this.groupRepo.save(group);
 
-        // Calcular sesiones basadas en weekly_hours
-        if (subject.weekly_hours) {
-            let hoursRemaining = subject.weekly_hours;
-        
-            while (hoursRemaining > 0) {
-              const sessionDuration = hoursRemaining >= 2 ? 2 : hoursRemaining; // Última sesión puede ser menos de 2h
-              const session = this.sessionRepo.create({
-                group: savedGroup,
-                day_of_week: null, // El frontend lo edita después
-                start_time: null,
-                duration_hours: sessionDuration,
-              });
-              await this.sessionRepo.save(session);
-              hoursRemaining -= sessionDuration;
-            }
-          }
-
         return savedGroup;
 
     }
