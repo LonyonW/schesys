@@ -144,10 +144,12 @@ Session B [ID: ${sessionB.id ?? 'unsaved'}] (Group ID: ${sessionB.group?.id ?? '
                 const subjectBId = sessionB.group?.subject?.id;
                 const groupAId = sessionA.group?.id;
                 const groupBId = sessionB.group?.id;
+                const groupACode = sessionA.group?.code;
+                const groupBCode = sessionB.group?.code;
 
-                if (!subjectAId || !subjectBId || !groupAId || !groupBId) {
-                    continue; // Datos incompletos, saltar
-                }
+                if (!subjectAId || !subjectBId || !groupAId || !groupBId || !groupACode || !groupBCode) {
+                continue; // Datos incompletos, saltar
+            }
 
                 if (sessionA.day_of_week === sessionB.day_of_week) {
                     // Verificar que ambas sesiones tengan start_time y duration_hours válidos
@@ -176,13 +178,22 @@ Session B [ID: ${sessionB.id ?? 'unsaved'}] (Group ID: ${sessionB.group?.id ?? '
                         }
 
                         // 2.  Si pertenecen a diferentes materias pero mismo semestre: PROHIBIDO cruzar
+                        // Validar solo si ambos códigos terminan en "1"
                         if (subjectAId !== subjectBId) {
+                        const endsWith1A = groupACode.trim().endsWith('1');
+                        const endsWith1B = groupBCode.trim().endsWith('1');
+
+                        if (endsWith1A && endsWith1B) {
                             throw new HttpException(`Conflict detected:
-      Sessions from DIFFERENT subjects (but same semester ${semester}) are overlapping!
-      Session A [Subject ID: ${subjectAId}, Group ID: ${groupAId}]
-      Session B [Subject ID: ${subjectBId}, Group ID: ${groupBId}]
-      `, HttpStatus.BAD_REQUEST);
+Sessions from DIFFERENT subjects (same semester ${semester}) are overlapping AND both group codes end with '1'.
+Session A [Subject ID: ${subjectAId}, Group ID: ${groupAId}, Code: ${groupACode}]
+Session B [Subject ID: ${subjectBId}, Group ID: ${groupBId}, Code: ${groupBCode}]
+`, HttpStatus.BAD_REQUEST);
                         }
+
+                        // Si no terminan ambos en "1", se permite el cruce
+                        continue;
+                    }
 
                         // 3. Si pertenecen a la misma materia pero grupos diferentes: PERMITIDO (nada que hacer)
                     }
