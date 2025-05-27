@@ -4,10 +4,9 @@ import { Repository } from 'typeorm';
 import { Session } from 'src/sessions/session.entity';
 import { Group } from 'src/groups/group.entity';
 import { Teacher } from 'src/teachers/teacher.entity';
-import { MailerService } from '@nestjs-modules/mailer';
-import * as fs from 'fs';
-import * as path from 'path';
 import { PdfService } from 'src/pdf/pdf.service';
+import { MailService } from 'src/mail/mail.service';
+
 
 @Injectable()
 export class ReportsService {
@@ -21,9 +20,9 @@ export class ReportsService {
     @InjectRepository(Teacher)
     private readonly teacherRepo: Repository<Teacher>,
 
-    private readonly mailerService: MailerService,
-
     private readonly pdfService: PdfService,
+
+    private readonly mailService: MailService, // Inyecta MailService
   ) {}
 
   async generateAndSendReports(): Promise<void> {
@@ -36,13 +35,12 @@ export class ReportsService {
         order: { day_of_week: 'ASC', start_time: 'ASC' },
       });
 
-      const pdfPath = await this.generatePDF(teacher, sessions);
-      await this.sendEmailWithAttachment(teacher.institutional_email, pdfPath);
-      fs.unlinkSync(pdfPath);
+      const pdfBuffer = await this.generatePDF(teacher, sessions);
+      await this.sendEmailWithAttachment(teacher.institutional_email, pdfBuffer);
     }
   }
 
-  private async generatePDF(teacher: Teacher, sessions: Session[]): Promise<string> {
+  private async generatePDF(teacher: Teacher, sessions: Session[]): Promise<Buffer> {
     try {
       console.log('Iniciando generación de PDF con PdfService...');
       console.log('Datos del docente:', teacher);
@@ -50,39 +48,18 @@ export class ReportsService {
 
       const pdfBuffer = await this.pdfService.generateWeeklySchedulePdf(teacher, sessions);
 
-      const filename = `schedule_${teacher.id}.pdf`;
-      const dir = path.join(__dirname, '../../../tmp');
-
-      if (!fs.existsSync(dir)) {
-        console.log(`Creando directorio ${dir}`);
-        fs.mkdirSync(dir, { recursive: true });
-      }
-
-      const filePath = path.join(dir, filename);
-      await fs.promises.writeFile(filePath, pdfBuffer);
-
-      console.log(`PDF generado en: ${filePath}`);
-      return filePath;
+      console.log('PDF generado exitosamente como buffer');
+      return pdfBuffer;
     } catch (error) {
       console.error('Error en generatePDF:', error.message);
       throw error;
     }
   }
 
-  private async sendEmailWithAttachment(email: string, filePath: string) {
+  private async sendEmailWithAttachment(email: string, pdfBuffer: Buffer) {
     try {
-      console.log(`Enviando email a ${email} con archivo ${filePath}`);
-      await this.mailerService.sendMail({
-        to: email,
-        subject: 'Reporte de horario semanal',
-        text: 'Adjunto encontrarás tu horario semanal de sesiones.',
-        attachments: [
-          {
-            filename: path.basename(filePath),
-            path: filePath,
-          },
-        ],
-      });
+      console.log(`Enviando email a ${email} con archivo adjunto`);
+      await this.mailService.sendScheduleReportEmail(email, pdfBuffer);
       console.log(`Email enviado exitosamente a ${email}`);
     } catch (error) {
       console.error(`Error al enviar email a ${email}:`, error.message);
@@ -108,13 +85,10 @@ export class ReportsService {
       });
 
       console.log(`Generando PDF para el docente ${teacherId}`);
-      const pdfPath = await this.generatePDF(teacher, sessions);
+      const pdfBuffer = await this.generatePDF(teacher, sessions);
 
       console.log(`Enviando email al docente ${teacherId} (${teacher.institutional_email})`);
-      await this.sendEmailWithAttachment(teacher.institutional_email, pdfPath);
-
-      console.log(`Eliminando archivo temporal: ${pdfPath}`);
-      fs.unlinkSync(pdfPath);
+      await this.sendEmailWithAttachment(teacher.institutional_email, pdfBuffer);
     } catch (error) {
       console.error('Error en generateAndSendReportForTeacher:', error.message);
       throw error;
