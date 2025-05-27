@@ -14,6 +14,8 @@ import { ContractTypesModule } from './contract-types/contract-types.module';
 import { TeachersModule } from './teachers/teachers.module';
 import { SessionsModule } from './sessions/sessions.module';
 import { ValidationsModule } from './common/validations.module';
+import { PdfModule } from './pdf/pdf.module';
+import { ReportModule } from './reports/reports.module';
 
 
 // guardar credenciales secretas *
@@ -41,6 +43,8 @@ import { ValidationsModule } from './common/validations.module';
     TeachersModule,
     SessionsModule,
     ValidationsModule,
+    PdfModule,
+    ReportModule,
   ],
   controllers: [AppController],
   providers: [AppService],

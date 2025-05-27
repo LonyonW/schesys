@@ -29,6 +29,10 @@ export class ClassroomsService {
   async searchClassrooms(filter: FilterClassroomDto): Promise<Classroom[]> {
     const where: any = {};
 
+    if (filter.id) {
+    where.id = filter.id;
+    }
+
     if (filter.name) {
       where.name = ILike(`%${filter.name}%`);
     }
