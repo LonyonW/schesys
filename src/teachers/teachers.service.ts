@@ -72,13 +72,15 @@ export class TeachersService {
       teacher.contract_type = contractType;
     }
 
-    //const updatedTeacher = Object.assign(teacher, data);
+   
     //return this.teacherRepo.save(updatedTeacher);
     teacher.full_name = data.name ?? teacher.full_name;
     teacher.institutional_email = data.institutional_email ?? teacher.institutional_email;
     teacher.academic_level = data.academic_level ?? teacher.academic_level;
     teacher.is_active = data.is_active ?? teacher.is_active;
 
-    return this.teacherRepo.save(teacher);
+     const updatedTeacher = Object.assign(teacher, data);
+
+    return this.teacherRepo.save(updatedTeacher);
   }
 }
